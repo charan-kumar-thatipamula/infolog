@@ -115,7 +115,7 @@ function customLogic(nsRecord, mappings, exportRecord) {
         puLine['packagedescrups'] = pdValue
       }
 
-      // setStatus(nsRecord, mappings, exportRecord)
+      setStatus(nsRecord, mappings, exportRecord)
     }
   } catch (e) {
     nlapiLogExecution('ERROR', 'Exception while searching for item in item fulfillment', e)

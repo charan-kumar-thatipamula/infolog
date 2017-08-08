@@ -26,7 +26,7 @@ var shipmentMappings = {
       "mappings": [
         {
           "type": "hardCoded",
-          "hardCodedValue": "B",
+          "hardCodedValue": "C",
           "nsField": "shipstatus"
         },
         {
@@ -85,23 +85,14 @@ var inventoryAdjustmentMappings = {
       "inventory": {
         "sublistPath": "",
         "mappings": [{
-          "type": "search",
-          "search": {
-            "rType": "item",
-            "filters": [{
-              "searchField": "nameinternal",
-              "operator": "is",
-              "externalField": "ProductID"
-            }],
-            "column": "internalid"
-          },
+          "externalField": "InternalProductID",
           "nsField": "item"
         },
         {
           "externalField": "Quantity",
           "nsField": "adjustqtyby"
         }, {
-          "externalField": "FrWHLocation",
+          "externalField": "ToWHLocation",
           "nsField": "location",
           "type": "oneToOne",
           "mapObj": locationMappings
@@ -126,32 +117,23 @@ var inventoryTransferMappings = {
         "nsField": "account",
         "hardCodedValue": "1"
       }, {
-          "externalField": "FrWHLocation",
-          "nsField": "location",
-          "type": "oneToOne",
-          "mapObj": locationMappings
-        }, {
-          "externalField": "ToWHLocation",
-          "nsField": "transferlocation",
-          "type": "oneToOne",
-          "mapObj": locationMappings
-        }
+        "externalField": "FrWHLocation",
+        "nsField": "location",
+        "type": "oneToOne",
+        "mapObj": locationMappings
+      }, {
+        "externalField": "ToWHLocation",
+        "nsField": "transferlocation",
+        "type": "oneToOne",
+        "mapObj": locationMappings
+      }
       ]
     },
     "sublists": {
       "inventory": {
         "sublistPath": "",
         "mappings": [{
-          "type": "search",
-          "search": {
-            "rType": "item",
-            "filters": [{
-              "searchField": "nameinternal",
-              "operator": "is",
-              "externalField": "ProductID"
-            }],
-            "column": "internalid"
-          },
+          "externalField": "InternalProductID",
           "nsField": "item"
         },
         {
@@ -197,16 +179,7 @@ var poRecieptMappings = {
       "item": {
         "sublistPath": "POReceiptLines.ReceiptLine",
         "mappings": [{
-          "type": "search",
-          "search": {
-            "rType": "item",
-            "filters": [{
-              "searchField": "nameinternal",
-              "operator": "is",
-              "externalField": "ProductID"
-            }],
-            "column": "internalid"
-          },
+          "externalField": "InternalProductID",
           "nsField": "item"
         }, {
           "externalField": "QuantityReceived",
@@ -218,10 +191,10 @@ var poRecieptMappings = {
           "type": "oneToOne",
           "mapObj": locationMappings
         },
-      {
-        "externalField": "POLineNo",
-        "nsField": "line"
-      }]
+        {
+          "externalField": "POLineNo",
+          "nsField": "line"
+        }]
       }
     }
   }
