@@ -115,7 +115,7 @@ function customLogic(nsRecord, mappings, exportRecord) {
         puLine['packagedescrups'] = pdValue
       }
 
-      // setStatus(nsRecord, mappings, exportRecord)
+      setStatus(nsRecord, mappings, exportRecord)
     }
   } catch (e) {
     nlapiLogExecution('ERROR', 'Exception while searching for item in item fulfillment', e)
@@ -132,20 +132,39 @@ function setStatus(nsRecord, mappings, exportRecord) {
   }
   var r = nlapiLoadRecord(nsRecord.recType, nsRecord.bodyFields.internalid)
   var flag = true
+  var exprtLineQuantity = {}
   for (var i in shipmentLine) {
     var sl = shipmentLine[i]
-    var ln = sl.ShipmentLineRequestNo
-    var quantityOnFulfillment = r.getLineItemValue('item', 'quantity', ln)
-    var incomingQuantity = sl.ShippedQuantity
-    if (quantityOnFulfillment !== incomingQuantity) {
+    var ln = sl.ShipmentLineResponseNo
+    exprtLineQuantity[ln] = sl.ShippedQuantity || ''
+  }
+  if (shipmentLine.length !== r.getLineItemCount('item')) {
+    throw new Error('Line item count differs between NetSuite fulfillment record and the record coming from FTP')
+  }
+  for (i = 1; i <= r.getLineItemCount('item'); i++) {
+    var quantityOnFulfillment = r.getLineItemValue('item', 'quantity', i)
+    if (exprtLineQuantity[i] !== quantityOnFulfillment) {
       flag = false
       break
     }
   }
+  // for (var i in shipmentLine) {
+  //   var sl = shipmentLine[i]
+  //   var ln = sl.ShipmentLineRequestNo
+  //   var quantityOnFulfillment = r.getLineItemValue('item', 'quantity', ln)
+  //   var incomingQuantity = sl.ShippedQuantity
+  //   if (quantityOnFulfillment !== incomingQuantity) {
+  //     flag = false
+  //     break
+  //   }
+  // }
 
   if (flag) {
     nlapiLogExecution('DEBUG', 'All quantities are shipped', 'setting status to \'Shipped\'')
     nsRecord.shipstatus = 'C'
+  } else {
+    nlapiLogExecution('DEBUG', 'Some quantities are not shipped', 'setting status to \'Packed\'')
+    nsRecord.shipstatus = 'B'
   }
 }
 

@@ -33,14 +33,15 @@ One.SaveRecord = function () {
           if (recType === 'itemreceipt' && sublistName === 'item') {
             var lineNumbers = {}
             var lines = sublists[sublistName]
+            var flag = true
             for (var ind = 0; ind < lines.length; ind++) {
               var line = lines[ind]
               lineNumbers[line.line] = ind
             }
-            nlapiLogExecution('DEBUG', 'record.getLineItemCount(sublistName)', record.getLineItemCount(sublistName))
+            // nlapiLogExecution('DEBUG', 'record.getLineItemCount(sublistName)', record.getLineItemCount(sublistName))
             nlapiLogExecution('DEBUG', 'exported lineNumbers', JSON.stringify(lineNumbers))
             for (var j = 1; j <= record.getLineItemCount(sublistName); j++) {
-              nlapiLogExecution('DEBUG', 'j and record.getLineItemValue(sublistName, \'line\', j)', j + ' and ' + (!lineNumbers.hasOwnProperty(record.getLineItemValue(sublistName, 'line', j))))
+              // nlapiLogExecution('DEBUG', 'j and record.getLineItemValue(sublistName, \'line\', j)', j + ' and ' + (!lineNumbers.hasOwnProperty(record.getLineItemValue(sublistName, 'line', j))))
               // if (!lineNumbers.hasOwnProperty(j)) {
               if (!lineNumbers.hasOwnProperty(record.getLineItemValue(sublistName, 'line', j))) {
                 nlapiLogExecution('DEBUG', 'unsetting itemreceive value', 'lineNumber: ' + j)
@@ -48,12 +49,27 @@ One.SaveRecord = function () {
                 nlapiLogExecution('DEBUG', 'unsetting done', 'lineNumber: ' + j)
               } else {
                 var line = lines[lineNumbers[record.getLineItemValue(sublistName, 'line', j)]]
+                flag = false
+                nlapiLogExecution('DEBUG', 'Quantity received', 'line number of PO: ' + j)
                 for (var fld in line) {
                   if (line.hasOwnProperty(fld)) {
                     nlapiLogExecution('DEBUG', 'sublistName, fld, line[fld]', sublistName + ':' + fld + ':' + line[fld])
                     record.setLineItemValue(sublistName, fld, j, line[fld])
                   }
                 }
+              }
+              if (flag) {
+                var temp = ''
+                for (var k in lineNumbers) {
+                  if (lineNumbers.hasOwnProperty(k)) {
+                    if (temp.length > 0) {
+                      temp = temp + ', '
+                    }
+                    temp = temp + k
+                  }
+                }
+                // nlapiLogExecution('DEBUG', 'Can not create itemreceipt', 'Line(s) [' + temp + '] from FTP file are already fulfilled.')
+                throw new Error('Can not create itemreceipt. PurchaseOrder Line(s) [' + temp + '] from FTP file are already fulfilled.')
               }
             }
           } else {

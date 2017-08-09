@@ -11,7 +11,7 @@ function runFlow() {
   var destinationFolderPath = '/ydg_ns/BIBO_TO_YDG/Processed'
   try {
     postData['dirPath'] = homePath + filesPath
-    postData['method'] = 'fetchFiles'
+    // postData['method'] = 'fetchFiles'
     var res = nlapiRequestURL(scriptPath, postData, null, null, 'POST')
     var resBody = res.getBody()
     // nlapiLogExecution('DEBUG', 'resBody', resBody)
