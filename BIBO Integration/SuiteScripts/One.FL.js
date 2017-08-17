@@ -1,17 +1,17 @@
 function runFlow() {
   var postData = []
   var homePath = '/var/www'
-  var filesPath = '/ydg_ns/BIBO_TO_YDG'
+  var filesPath = '/ydg_ns/prod/bibo_to_ydg'
   var scriptName = '/dirUtil.php'
-  var scriptPath = '/ydg_ns/BIBO_TO_YDG' // '/box_test/YDG_Export_files'
+  var scriptPath = '/ydg_ns/prod/bibo_to_ydg' // '/box_test/YDG_Export_files'
   var uri = 'http://gc.boxinboxout.com'
   var testFileName = ''
   scriptPath = uri + scriptPath + scriptName
   var sourceFolderPath = homePath + filesPath
-  var destinationFolderPath = '/ydg_ns/BIBO_TO_YDG/Processed'
+  var destinationFolderPath = '/ydg_ns/prod/bibo_to_ydg/Processed'
   try {
     postData['dirPath'] = homePath + filesPath
-    // postData['method'] = 'fetchFiles'
+    postData['method'] = 'fetchFiles'
     var res = nlapiRequestURL(scriptPath, postData, null, null, 'POST')
     var resBody = res.getBody()
     // nlapiLogExecution('DEBUG', 'resBody', resBody)
@@ -76,8 +76,12 @@ function passRecordJson(recordsJson, fileName) {
   var savedRecords = []
   for (var i = 0; i < recordsJson.length; i++) {
     // nlapiLogExecution('DEBUG', 'recordsJson', recordsJson[i]['AdjustmentReason'])
-    if (fileName.indexOf('InventoryAdj') === 0 && recordsJson[i]['AdjustmentReason'] === 'Put-Away') {
-      mappings = inventoryTransferMappings
+    if (fileName.indexOf('InventoryAdj') === 0) {
+      if (recordsJson[i]['AdjustmentReason'] === 'Put-Away') {
+        mappings = inventoryTransferMappings
+      } else {
+        mappings = inventoryAdjustmentMappings
+      }     
     }
     var nsRecord = c.generateNSObject(mappings, recordsJson[i])
     nlapiLogExecution('DEBUG', 'nsRecord', JSON.stringify(nsRecord))
