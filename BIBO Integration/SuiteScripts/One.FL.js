@@ -9,6 +9,7 @@ function runFlow() {
   scriptPath = uri + scriptPath + scriptName
   var sourceFolderPath = homePath + filesPath
   var destinationFolderPath = '/ydg_ns/prod/bibo_to_ydg/Processed'
+  var fPrefixToSkip = ['ShipConfirm'] // , 'InventoryAdj', 'POReceipt']
   try {
     postData['dirPath'] = homePath + filesPath
     postData['method'] = 'fetchFiles'
@@ -21,6 +22,18 @@ function runFlow() {
     for (var i in fileNames) {
       var fileName = fileNames[i]
       if (testFileName && testFileName.length && fileName !== testFileName) {
+        continue
+      }
+      var isSkip = false
+      for (var fskip = 0; fskip < fPrefixToSkip.length; fskip++) {
+        var fPrefix = fPrefixToSkip[fskip]
+        if (fileName.indexOf(fPrefix) === 0) {
+          isSkip = true
+          break
+        }
+      }
+
+      if (isSkip) {
         continue
       }
       // nlapiLogExecution('DEBUG', 'fileName', fileName)
@@ -81,7 +94,7 @@ function passRecordJson(recordsJson, fileName) {
         mappings = inventoryTransferMappings
       } else {
         mappings = inventoryAdjustmentMappings
-      }     
+      }
     }
     var nsRecord = c.generateNSObject(mappings, recordsJson[i])
     nlapiLogExecution('DEBUG', 'nsRecord', JSON.stringify(nsRecord))
